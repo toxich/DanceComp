@@ -1,0 +1,1 @@
+include "datasource", "domain", "main", "web", "application"

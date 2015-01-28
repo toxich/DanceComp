@@ -1,0 +1,13 @@
+apply plugin: 'application'
+
+mainClassName = 'com.improteam.dancecomp.App'
+                            
+jar {
+    baseName = 'dancecomp'
+    version =  '0.1.0'
+}
+
+dependencies {
+    compile project(':main')
+}
+
