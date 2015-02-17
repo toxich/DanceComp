@@ -9,5 +9,6 @@ jar {
 
 dependencies {
     compile project(':main')
+    compile project(':scoring')
 }
 

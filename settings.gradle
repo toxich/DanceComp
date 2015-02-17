@@ -1,1 +1,1 @@
-include "datasource", "domain", "main", "web", "application"
+include "datasource", "main", "scoring", "domain", "web", "application"
