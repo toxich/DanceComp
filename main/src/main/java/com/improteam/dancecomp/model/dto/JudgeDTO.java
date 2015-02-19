@@ -7,8 +7,10 @@ public class JudgeDTO extends PersonDTO {
 
     private boolean chief;
     private boolean trial;
-    private boolean onlyLeaders;
-    private boolean onlyFollowers;
+    private boolean judgeLeaders;
+    private boolean judgeFollowers;
+    private boolean judgeAll;
+    private String nick;
 
     public boolean isChief() {
         return chief;
@@ -26,19 +28,35 @@ public class JudgeDTO extends PersonDTO {
         this.trial = trial;
     }
 
-    public boolean isOnlyLeaders() {
-        return onlyLeaders;
+    public boolean isJudgeLeaders() {
+        return judgeLeaders;
     }
 
-    public void setOnlyLeaders(boolean onlyLeaders) {
-        this.onlyLeaders = onlyLeaders;
+    public void setJudgeLeaders(boolean judgeLeaders) {
+        this.judgeLeaders = judgeLeaders;
     }
 
-    public boolean isOnlyFollowers() {
-        return onlyFollowers;
+    public boolean isJudgeFollowers() {
+        return judgeFollowers;
     }
 
-    public void setOnlyFollowers(boolean onlyFollowers) {
-        this.onlyFollowers = onlyFollowers;
+    public void setJudgeFollowers(boolean judgeFollowers) {
+        this.judgeFollowers = judgeFollowers;
+    }
+
+    public boolean isJudgeAll() {
+        return judgeAll;
+    }
+
+    public void setJudgeAll(boolean judgeAll) {
+        this.judgeAll = judgeAll;
+    }
+
+    public String getNick() {
+        return nick;
+    }
+
+    public void setNick(String nick) {
+        this.nick = nick;
     }
 }

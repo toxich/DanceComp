@@ -13,6 +13,7 @@ public enum ContestLevel {
     ALL_STARS,
     ADVANCED_AND_STARS,
     CHAMPIONS,
+    OPEN,
     MASTERS,
     PROFESSIONAL,
     INVITATIONAL
