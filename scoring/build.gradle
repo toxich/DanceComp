@@ -4,14 +4,3 @@ dependencies {
     compile ('org.mockito:mockito-all:1.10.19')
     compile ('junit:junit:4.12')
 }
-
-test {
-    testLogging {
-        events "skipped", "failed"
-        afterSuite { desc, result ->
-            if (!desc.parent) { // will match the outermost suite
-                println "Results: ${result.resultType} (${result.testCount} tests, ${result.successfulTestCount} successes, ${result.failedTestCount} failures, ${result.skippedTestCount} skipped)"
-            }
-        }
-    }
-} 

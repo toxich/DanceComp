@@ -13,4 +13,16 @@ subprojects{
   dependencies {
     compile 'org.slf4j:slf4j-api:1.7.7'
   }
+
+  test {
+    testLogging {
+      events "skipped", "failed"
+        afterSuite { desc, result ->
+          if (!desc.parent) { // will match the outermost suite
+          println "Results: ${result.resultType} (${result.testCount} tests, ${result.successfulTestCount} successes, ${result.failedTestCount} failures, ${result.skippedTestCount} skipped)"
+        }
+      }
+    }
+  } 
+
 }
