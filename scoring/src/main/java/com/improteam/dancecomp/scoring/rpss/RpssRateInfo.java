@@ -5,19 +5,11 @@ package com.improteam.dancecomp.scoring.rpss;
  */
 public class RpssRateInfo implements Comparable<RpssRateInfo> {
 
-    int lowPlace = 1;
     int highPlace = 1;
+    int lowPlace = 1;
     int judgeCount = 0;
     int highScoreSum = 0;
     boolean majority = false;
-
-    public int getLowPlace() {
-        return lowPlace;
-    }
-
-    public void setLowPlace(int lowPlace) {
-        this.lowPlace = lowPlace;
-    }
 
     public int getHighPlace() {
         return highPlace;
@@ -25,6 +17,14 @@ public class RpssRateInfo implements Comparable<RpssRateInfo> {
 
     public void setHighPlace(int highPlace) {
         this.highPlace = highPlace;
+    }
+
+    public int getLowPlace() {
+        return lowPlace;
+    }
+
+    public void setLowPlace(int lowPlace) {
+        this.lowPlace = lowPlace;
     }
 
     public int getJudgeCount() {
@@ -69,8 +69,8 @@ public class RpssRateInfo implements Comparable<RpssRateInfo> {
 
     @Override
     public int hashCode() {
-        int result = lowPlace;
-        result = 31 * result + highPlace;
+        int result = highPlace;
+        result = 31 * result + lowPlace;
         result = 31 * result + judgeCount;
         result = 31 * result + highScoreSum;
         result = 31 * result + (majority ? 1 : 0);
