@@ -1,54 +1,44 @@
 package com.improteam.dancecomp.scoring.rpss;
 
 /**
+ * Суммарная оценка по интервалу мест от судей по одному участнику
  * @author jury
  */
 public class RpssRateInfo implements Comparable<RpssRateInfo> {
 
+    // верхняя граница интервала (по факту - всегда 1)
     int highPlace = 1;
+
+    // нижняя граница интервала мест
     int lowPlace = 1;
+
+    // количество судей в интервале
     int judgeCount = 0;
+
+    // сумма мест по всем судьям в интервале мест
     int highScoreSum = 0;
+
+    // наличие большинства (более половины оценок судей попадает в интервал мест)
     boolean majority = false;
 
     public int getHighPlace() {
         return highPlace;
     }
 
-    public void setHighPlace(int highPlace) {
-        this.highPlace = highPlace;
-    }
-
     public int getLowPlace() {
         return lowPlace;
-    }
-
-    public void setLowPlace(int lowPlace) {
-        this.lowPlace = lowPlace;
     }
 
     public int getJudgeCount() {
         return judgeCount;
     }
 
-    public void setJudgeCount(int judgeCount) {
-        this.judgeCount = judgeCount;
-    }
-
     public int getHighScoreSum() {
         return highScoreSum;
     }
 
-    public void setHighScoreSum(int highScoreSum) {
-        this.highScoreSum = highScoreSum;
-    }
-
     public boolean isMajority() {
         return majority;
-    }
-
-    public void setMajority(boolean majority) {
-        this.majority = majority;
     }
 
     @Override

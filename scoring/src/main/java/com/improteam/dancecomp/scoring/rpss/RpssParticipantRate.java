@@ -6,12 +6,10 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
+ * Полные оценки и результат участника
  * @author jury
  */
 public class RpssParticipantRate implements Comparable<RpssParticipantRate> {
@@ -19,15 +17,27 @@ public class RpssParticipantRate implements Comparable<RpssParticipantRate> {
     @SuppressWarnings("UnusedDeclaration")
     private static final Logger logger = LoggerFactory.getLogger(RpssParticipantRate.class);
 
+    // Участник
     private Participant participant;
+
+    // Оценки судей
     private List<Score> scores;
+
+    // Количество участников
     private int participantCount;
 
-    private List<RpssRateInfo> rates;
-    private int majorityCount;
-    private boolean useChief;
-    private int chiefPlace;
+    // Итоговое место
     private int place;
+
+    // Вычислимые поля:
+    // Суммарные оценки по интервалам мест
+    private List<RpssRateInfo> rates;
+    // Количество судей для большинства
+    private int majorityCount;
+    // Использование оценок главного судьи (судей нечётное количество)
+    private boolean useChief;
+    // Место от главного судьи
+    private int chiefPlace;
 
     public RpssParticipantRate(Participant participant, List<Score> scores, int participantCount) {
         this.participant = participant;
@@ -108,16 +118,12 @@ public class RpssParticipantRate implements Comparable<RpssParticipantRate> {
         return result;
     }
 
-    @Override
-    public int compareTo(RpssParticipantRate other) {
-        int result = compareRates(other);
-        return result != 0 ? result : chiefPlace - other.chiefPlace;
-    }
-
-    // Метод необходим при совпадении всех правил и необходимости сравнения голосов судей между собой
     // Нельзя всю логику реализовать в "compareTo", т.к. может быть несколько пар (от 3-х),
     // при сравнении которых возникнет ситуация p1 > p2 > p3 > p1
-    public int compareRates(RpssParticipantRate other) {
+    // Это может произойти при совпадении всех правил
+    // и необходимости сравнения голосов судей между собой для пар.
+    @Override
+    public int compareTo(RpssParticipantRate other) {
         getRates();
         other.getRates();
         for (int lowPlace = place; lowPlace <= participantCount; lowPlace++) {
@@ -125,5 +131,95 @@ public class RpssParticipantRate implements Comparable<RpssParticipantRate> {
             if (result != 0) return result;
         }
         return 0;
+    }
+
+    public int compareWithJudges(RpssParticipantRate other) {
+        if (this.participant.equals(other.participant)) return 0;
+        int result = compareTo(other);
+        if (result != 0) return result;
+
+        int highScores = 0;
+        for (Score thisScore : scores) {
+            if (!useChief && thisScore.getJudge().isChief()) continue;
+            boolean compared = false;
+
+            for (Score otherScore : other.scores) {
+                if (thisScore.getJudge().equals(otherScore.getJudge())) {
+                    int comparison = thisScore.getRate().intValue() - otherScore.getRate().intValue();
+                    if (comparison == 0) throw new RuntimeException("Duplicate judge scores " + thisScore.getJudge());
+                    if (comparison < 0) highScores++;
+                    compared = true;
+                    break;
+                }
+            }
+
+            if (!compared) throw new RuntimeException("No judge for other participant " + thisScore.getJudge());
+        }
+        return majorityCount - highScores;
+    }
+
+    public static void sort(List<RpssParticipantRate> participants) {
+        Collections.sort(participants);
+        int tieIndex = -1;
+        for (int index = 1; index < participants.size(); index++) {
+            RpssParticipantRate current = participants.get(index);
+            RpssParticipantRate prev = participants.get(index - 1);
+            if (prev.compareTo(current) != 0) {
+                tieIndex = -1;
+                continue;
+            }
+
+            if (tieIndex < 0) tieIndex = index - 1;
+            fixTie(participants, tieIndex, index);
+        }
+    }
+
+    // вопрос, нужно ли кластеризовать по группам
+    // когда внутри группы цикл, кто кого лучше,
+    // а между групп одни лучше других
+    private static void fixTie(final List<RpssParticipantRate> rates, final int from, final int to) {
+        final List<RpssParticipantRate> best = new ArrayList<RpssParticipantRate>(to - from);
+        final List<RpssParticipantRate> worst = new ArrayList<RpssParticipantRate>(to - from);
+        final List<RpssParticipantRate> tie = rates.subList(from, to + 1);
+
+        // выберем лучших и худших по взаимным оценкам судей
+        int tieSize;
+        do {
+            tieSize = tie.size();
+
+            CURRENT:
+            for (RpssParticipantRate current : tie) {
+                for (RpssParticipantRate other : tie) {
+                    if (current.compareWithJudges(other) > 0) continue CURRENT;
+                }
+                best.add(current);
+                break;
+            }
+            tie.removeAll(best);
+
+            CURRENT:
+            for (RpssParticipantRate current : tie) {
+                for (RpssParticipantRate other : tie) {
+                    if (current.compareWithJudges(other) < 0) continue CURRENT;
+                }
+                worst.add(0, current);
+                break;
+            }
+            tie.removeAll(worst);
+
+        } while (tieSize > tie.size());
+
+        Collections.sort(tie, new Comparator<RpssParticipantRate>() {
+            @Override
+            public int compare(RpssParticipantRate o1, RpssParticipantRate o2) {
+                return o1.getChiefPlace() - o2.getChiefPlace();
+            }
+        });
+
+        for (int index = from; index <= to; index++) {
+            if (best.size() > 0) rates.set(index, best.remove(0));
+            else if (tie.size() > 0) rates.set(index, tie.remove(0));
+            else rates.set(index, worst.remove(0));
+        }
     }
 }
