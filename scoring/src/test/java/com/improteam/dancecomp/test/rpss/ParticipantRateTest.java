@@ -60,6 +60,37 @@ public class ParticipantRateTest {
         } catch (RuntimeException re) {
             assertTrue(re.getMessage(), re.getMessage().contains("Duplicate"));
         }
+
+        try {
+            checkPlaces(new int[][][]{
+                    {{1, 1, 0}, {1}},
+                    {{2, 2, 2}, {2}},
+                    {{3, 3, 3}, {3}},
+            });
+            fail();
+        } catch (RuntimeException re) {
+            assertTrue(re.getMessage(), re.getMessage().contains("rate"));
+        }
+        try {
+            checkPlaces(new int[][][]{
+                    {{1, 1, 10}, {1}},
+                    {{2, 2, 2}, {2}},
+                    {{3, 3, 3}, {3}},
+            });
+            fail();
+        } catch (RuntimeException re) {
+            assertTrue(re.getMessage(), re.getMessage().contains("rate"));
+        }
+        try {
+            checkPlaces(new int[][][]{
+                    {{1, 1, 2}, {1}},
+                    {{2, 2, 2}, {2}},
+                    {{3, 3, 3}, {3}},
+            });
+            fail();
+        } catch (RuntimeException re) {
+            assertTrue(re.getMessage(), re.getMessage().contains("Duplicate"));
+        }
     }
 
     @Test
@@ -82,28 +113,58 @@ public class ParticipantRateTest {
         checkPlaces(new int[][][] {
                 {{1, 1, 1}, {1}},
                 {{2, 2, 2}, {2}},
-                {{3, 3, 3}, {3}}
+                {{3, 3, 3}, {3}},
         });
         // chief has other score
-        checkPlaces(new int[][][] {
+        checkPlaces(new int[][][]{
                 {{3, 1, 1}, {1}},
                 {{2, 2, 2}, {2}},
-                {{1, 3, 3}, {3}}
+                {{1, 3, 3}, {3}},
         });
         // judge has other score
         checkPlaces(new int[][][]{
                 {{1, 1, 3}, {1}},
                 {{2, 2, 2}, {2}},
-                {{3, 3, 1}, {3}}
+                {{3, 3, 1}, {3}},
         });
     }
 
     @Test
     public void noFirst() {
-        checkPlaces(new int[][][] {
+        checkPlaces(new int[][][]{
                 {{1, 2, 2}, {1}},
                 {{2, 1, 3}, {2}},
-                {{3, 3, 1}, {3}}
+                {{3, 3, 1}, {3}},
+        });
+    }
+
+    @Test
+    public void withinPair() {
+        // with simple tie for 3
+        checkPlaces(new int[][][] {
+                {{1, 1, 2, 3, 3}, {2}},
+                {{3, 3, 1, 1, 2}, {1}},
+                {{2, 4, 3, 2, 4}, {3}},
+                {{4, 2, 4, 4, 1}, {4}},
+        });
+    }
+
+    @Test
+    public void byMajority() {
+        checkPlaces(new int[][][] {
+                {{1, 1, 2, 4, 4}, {2}},
+                {{5, 4, 1, 1, 2}, {3}},
+                {{3, 3, 3, 3, 3}, {4}},
+                {{2, 2, 4, 2, 1}, {1}},
+                {{4, 5, 5, 5, 5}, {5}},
+        });
+
+        // majority and within pair
+        checkPlaces(new int[][][] {
+                {{1, 1, 2, 4, 4}, {3}},
+                {{4, 4, 1, 1, 2}, {2}},
+                {{3, 3, 3, 3, 3}, {4}},
+                {{2, 2, 4, 2, 1}, {1}},
         });
     }
 
@@ -132,7 +193,7 @@ public class ParticipantRateTest {
                 {{10,  9,  9, 11,  8,  5,  6,  9}, { 9}},
                 {{ 1,  3,  2,  1,  7,  3,  1,  1}, { 2}},
                 {{ 8,  8,  5,  8,  6, 12,  4,  6}, { 7}},
-                {{11, 12, 10, 11, 11, 11, 11, 12}, {12}},
+                {{11, 12,  8, 10, 11, 11, 11, 12}, {12}},
                 {{ 4,  7, 10,  4,  5,  8,  5,  4}, { 4}},
         })));
     }
@@ -142,12 +203,12 @@ public class ParticipantRateTest {
         checkPlaces(new int[][][] {
                 {{2, 3, 1}, {2}},
                 {{3, 1, 2}, {3}},
-                {{1, 2, 3}, {1}}
+                {{1, 2, 3}, {1}},
         });
         checkPlaces(new int[][][] {
                 {{1, 2, 3, 1}, {1}},
                 {{2, 3, 1, 2}, {2}},
-                {{3, 1, 2, 3}, {3}}
+                {{3, 1, 2, 3}, {3}},
         });
         checkPlaces(new int[][][] {
                 {{2, 3, 1}, {2}},

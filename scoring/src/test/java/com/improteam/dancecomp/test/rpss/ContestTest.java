@@ -32,7 +32,6 @@ public class ContestTest {
     public static class ParticipantPlace {
         public RpssParticipantRate rate;
         public int place;
-
         @Override
         public String toString() {
             return place + " - " + rate.getParticipant().getFullName();
@@ -92,6 +91,10 @@ public class ContestTest {
             @Override
             public boolean isChief() {
                 return chief;
+            }
+            @Override
+            public String toString() {
+                return getCode();
             }
         };
         judgeMap.put(index, result);

@@ -1,5 +1,6 @@
 package com.improteam.dancecomp.scoring.rpss;
 
+import com.improteam.dancecomp.scoring.Judge;
 import com.improteam.dancecomp.scoring.Participant;
 import com.improteam.dancecomp.scoring.Score;
 import org.apache.commons.collections4.CollectionUtils;
@@ -180,7 +181,7 @@ public class RpssParticipantRate implements Comparable<RpssParticipantRate> {
 
         // массив для сортировки по местам
         participants = new ArrayList<RpssParticipantRate>(participants);
-        for (RpssParticipantRate rate : participants) rate.setPlace(0);
+        checkScores(participants);
         Collections.sort(participants);
 
         // разрешение конфликтов
@@ -200,6 +201,34 @@ public class RpssParticipantRate implements Comparable<RpssParticipantRate> {
         // расстановка мест
         int place = 1;
         for (RpssParticipantRate rate : participants) rate.setPlace(place++);
+    }
+
+    private static void checkScores(List<RpssParticipantRate> rates) {
+        int count = rates.size();
+        if (count == 0) return;
+        int judgeCount = rates.get(0).getScores().size();
+        Judge chief = null;
+        Map<Judge, Set<Integer>> allScores = new HashMap<Judge, Set<Integer>>();
+        for (RpssParticipantRate rate : rates) {
+            rate.setPlace(0);
+            if (judgeCount == 0) judgeCount = rate.getScores().size();
+            else if (judgeCount != rate.getScores().size()) throw new RuntimeException("Wrong judge count " + rate);
+            for (Score score : rate.getScores()) {
+                if (score.getJudge().isChief()) {
+                    if (chief == null) chief = score.getJudge();
+                    else if (!chief.equals(score.getJudge())) throw new RuntimeException("Wrong chief judge " + rate);
+                }
+                int place = score.getRate().intValue();
+                if (place < 1 || place > count) throw new RuntimeException("Wrong place " + score);
+                Set<Integer> judgeScores = allScores.get(score.getJudge());
+                if (judgeScores == null) allScores.put(score.getJudge(), judgeScores = new HashSet<Integer>());
+                if (!judgeScores.add(place)) throw new RuntimeException("Duplicate score for judge " + score.getJudge());
+            }
+        }
+        if (allScores.size() != judgeCount) throw new RuntimeException("Duplicate judge " + rates);
+        for (Judge judge : allScores.keySet()) {
+            if (allScores.get(judge).size() != count) throw new RuntimeException("Duplicate places for " + judge);
+        }
     }
 
     // вопрос, нужно ли кластеризовать по группам
