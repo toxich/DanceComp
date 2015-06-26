@@ -70,10 +70,10 @@ public class ParticipantRateTest {
         assertTrue(rate1.compareTo(rate2) < 0);
 
         List<RpssParticipantRate> rateList = Arrays.asList(rate1, rate2);
-        RpssParticipantRate.sort(rateList);
+        RpssParticipantRate.rank(rateList);
         assertEquals(Arrays.asList(rate1, rate2), rateList);
         rateList = Arrays.asList(rate2, rate1);
-        RpssParticipantRate.sort(rateList);
+        RpssParticipantRate.rank(rateList);
         assertEquals(Arrays.asList(rate1, rate2), rateList);
     }
 

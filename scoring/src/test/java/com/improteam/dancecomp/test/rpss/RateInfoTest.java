@@ -93,7 +93,7 @@ public class RateInfoTest {
                 rate(2, 5, 10, true)
         );
         Collections.sort(rates);
-        assertEquals("wrong sort", "[5 (10), 4 (15), 4 (20), 4 (20), -, -, -]", rates.toString());
+        assertEquals("wrong rank", "[5 (10), 4 (15), 4 (20), 4 (20), -, -, -]", rates.toString());
     }
 
     public static RpssRateInfo rate(int lowPlace, int judgeCount, int highScoreSum, boolean majority) {

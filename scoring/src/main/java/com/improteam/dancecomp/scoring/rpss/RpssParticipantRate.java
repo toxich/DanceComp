@@ -171,7 +171,7 @@ public class RpssParticipantRate implements Comparable<RpssParticipantRate> {
         return highScores >= majorityCount ? -1 : 1;
     }
 
-    public static void sort(List<RpssParticipantRate> participants) {
+    public static void rank(List<RpssParticipantRate> participants) {
         Collections.sort(participants);
         int tieIndex = -1;
         for (int index = 1; index < participants.size(); index++) {

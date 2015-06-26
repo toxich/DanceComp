@@ -6,7 +6,6 @@ import com.improteam.dancecomp.scoring.Judge;
 import com.improteam.dancecomp.scoring.Participant;
 import com.improteam.dancecomp.scoring.Score;
 import com.improteam.dancecomp.scoring.rpss.RpssParticipantRate;
-import com.improteam.dancecomp.scoring.rpss.RpssRateInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -173,7 +172,7 @@ public class ContestTest {
             rates.add(random.nextInt(rates.size() + 1), place.rate);
             if (placeMap.put(place.place, place.rate) != null) fail("Duplicate places");
         }
-        RpssParticipantRate.sort(rates);
+        RpssParticipantRate.rank(rates);
         for (int place = 1; place < places.length + 1; place++) {
             assertEquals(placeMap.get(place), rates.get(place - 1));
         }
