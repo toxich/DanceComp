@@ -69,12 +69,12 @@ public class ParticipantRateTest {
         RpssParticipantRate rate2 = rate(participant(2), 2, score(chief(1), 2));
         assertTrue(rate1.compareTo(rate2) < 0);
 
-        List<RpssParticipantRate> rateList = Arrays.asList(rate1, rate2);
-        RpssParticipantRate.rank(rateList);
-        assertEquals(Arrays.asList(rate1, rate2), rateList);
-        rateList = Arrays.asList(rate2, rate1);
-        RpssParticipantRate.rank(rateList);
-        assertEquals(Arrays.asList(rate1, rate2), rateList);
+        RpssParticipantRate.rank(Arrays.asList(rate1, rate2));
+        assertEquals(1, rate1.getPlace());
+        assertEquals(2, rate2.getPlace());
+        RpssParticipantRate.rank(Arrays.asList(rate2, rate1));
+        assertEquals(1, rate1.getPlace());
+        assertEquals(2, rate2.getPlace());
     }
 
     @Test

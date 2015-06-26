@@ -173,8 +173,8 @@ public class ContestTest {
             if (placeMap.put(place.place, place.rate) != null) fail("Duplicate places");
         }
         RpssParticipantRate.rank(rates);
-        for (int place = 1; place < places.length + 1; place++) {
-            assertEquals(placeMap.get(place), rates.get(place - 1));
+        for (RpssParticipantRate rate : rates) {
+            assertEquals(rate, placeMap.get(rate.getPlace()));
         }
     }
 

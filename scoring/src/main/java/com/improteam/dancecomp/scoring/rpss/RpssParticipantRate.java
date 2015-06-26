@@ -172,7 +172,12 @@ public class RpssParticipantRate implements Comparable<RpssParticipantRate> {
     }
 
     public static void rank(List<RpssParticipantRate> participants) {
+
+        // массив для сортировки по местам
+        participants = new ArrayList<RpssParticipantRate>(participants);
         Collections.sort(participants);
+
+        // разрешение конфликтов
         int tieIndex = -1;
         for (int index = 1; index < participants.size(); index++) {
             RpssParticipantRate current = participants.get(index);
@@ -185,6 +190,8 @@ public class RpssParticipantRate implements Comparable<RpssParticipantRate> {
             if (tieIndex < 0) tieIndex = index - 1;
             fixTie(participants, tieIndex, index);
         }
+
+        // расстановка мест
         int place = 1;
         for (RpssParticipantRate rate : participants) rate.setPlace(place++);
     }
