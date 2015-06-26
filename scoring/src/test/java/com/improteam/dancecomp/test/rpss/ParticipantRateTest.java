@@ -146,6 +146,11 @@ public class ParticipantRateTest {
                 {{1, 2, 3}, {1}}
         });
         checkPlaces(new int[][][] {
+                {{1, 2, 3, 1}, {1}},
+                {{2, 3, 1, 2}, {2}},
+                {{3, 1, 2, 3}, {3}}
+        });
+        checkPlaces(new int[][][] {
                 {{2, 3, 1}, {2}},
                 {{3, 1, 2}, {3}},
                 {{1, 2, 3}, {1}},
