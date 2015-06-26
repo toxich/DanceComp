@@ -9,7 +9,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Arrays;
-import java.util.List;
 
 /**
  * @author jury
@@ -67,7 +66,7 @@ public class ParticipantRateTest {
     public void simpleCompare() {
         RpssParticipantRate rate1 = rate(participant(1), 2, score(chief(1), 1));
         RpssParticipantRate rate2 = rate(participant(2), 2, score(chief(1), 2));
-        assertTrue(rate1.compareTo(rate2) < 0);
+        assertTrue(rate1.compareByRates(rate2) < 0);
 
         RpssParticipantRate.rank(Arrays.asList(rate1, rate2));
         assertEquals(1, rate1.getPlace());

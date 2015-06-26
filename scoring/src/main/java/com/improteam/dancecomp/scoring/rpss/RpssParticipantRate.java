@@ -27,7 +27,7 @@ public class RpssParticipantRate implements Comparable<RpssParticipantRate> {
     private int participantCount;
 
     // Итоговое место
-    private int place;
+    private int place = 0;
 
     // Вычислимые поля:
     // Суммарные оценки по интервалам мест
@@ -131,12 +131,17 @@ public class RpssParticipantRate implements Comparable<RpssParticipantRate> {
         return result;
     }
 
-    // Нельзя всю логику реализовать в "compareTo", т.к. может быть несколько пар (от 3-х),
+    @Override
+    public int compareTo(RpssParticipantRate other) {
+        if (getPlace() > 0 && other.getPlace() > 0) return getPlace() - other.getPlace();
+        else return compareByRates(other);
+    }
+
+    // Нельзя всю логику реализовать в "compareByRates", т.к. может быть несколько пар (от 3-х),
     // при сравнении которых возникнет ситуация p1 > p2 > p3 > p1
     // Это может произойти при совпадении всех правил
     // и необходимости сравнения голосов судей между собой для пар.
-    @Override
-    public int compareTo(RpssParticipantRate other) {
+    public int compareByRates(RpssParticipantRate other) {
         getRates();
         other.getRates();
         for (int lowPlace = 1; lowPlace <= participantCount; lowPlace++) {
@@ -148,7 +153,7 @@ public class RpssParticipantRate implements Comparable<RpssParticipantRate> {
 
     public int compareWithJudges(RpssParticipantRate other) {
         if (this.participant.equals(other.participant)) return 0;
-        int result = compareTo(other);
+        int result = compareByRates(other);
         if (result != 0) return result;
 
         int highScores = 0;
@@ -175,6 +180,7 @@ public class RpssParticipantRate implements Comparable<RpssParticipantRate> {
 
         // массив для сортировки по местам
         participants = new ArrayList<RpssParticipantRate>(participants);
+        for (RpssParticipantRate rate : participants) rate.setPlace(0);
         Collections.sort(participants);
 
         // разрешение конфликтов
@@ -182,7 +188,7 @@ public class RpssParticipantRate implements Comparable<RpssParticipantRate> {
         for (int index = 1; index < participants.size(); index++) {
             RpssParticipantRate current = participants.get(index);
             RpssParticipantRate prev = participants.get(index - 1);
-            if (prev.compareTo(current) != 0) {
+            if (prev.compareByRates(current) != 0) {
                 tieIndex = -1;
                 continue;
             }
