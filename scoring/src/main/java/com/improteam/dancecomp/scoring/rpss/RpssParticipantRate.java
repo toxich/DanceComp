@@ -70,8 +70,21 @@ public class RpssParticipantRate implements Comparable<RpssParticipantRate> {
         this.place = place;
     }
 
+    public Participant getParticipant() {
+        return participant;
+    }
+
+    public List<Score> getScores() {
+        return scores;
+    }
+
+    public int getParticipantCount() {
+        return participantCount;
+    }
+
     protected void checkScoring() {
         if (participant == null) throw new RuntimeException("No participant specified");
+        if (participantCount <= 0) throw new RuntimeException("Bad participants count" + participantCount);
         if (CollectionUtils.isEmpty(scores)) throw new RuntimeException("No scores for participant " + participant);
 
         boolean hasChief = false;
@@ -126,7 +139,7 @@ public class RpssParticipantRate implements Comparable<RpssParticipantRate> {
     public int compareTo(RpssParticipantRate other) {
         getRates();
         other.getRates();
-        for (int lowPlace = place; lowPlace <= participantCount; lowPlace++) {
+        for (int lowPlace = 1; lowPlace <= participantCount; lowPlace++) {
             int result = rates.get(lowPlace - 1).compareTo(other.rates.get(lowPlace - 1));
             if (result != 0) return result;
         }
@@ -155,7 +168,7 @@ public class RpssParticipantRate implements Comparable<RpssParticipantRate> {
 
             if (!compared) throw new RuntimeException("No judge for other participant " + thisScore.getJudge());
         }
-        return majorityCount - highScores;
+        return highScores >= majorityCount ? -1 : 1;
     }
 
     public static void sort(List<RpssParticipantRate> participants) {
@@ -172,15 +185,17 @@ public class RpssParticipantRate implements Comparable<RpssParticipantRate> {
             if (tieIndex < 0) tieIndex = index - 1;
             fixTie(participants, tieIndex, index);
         }
+        int place = 1;
+        for (RpssParticipantRate rate : participants) rate.setPlace(place++);
     }
 
     // вопрос, нужно ли кластеризовать по группам
     // когда внутри группы цикл, кто кого лучше,
     // а между групп одни лучше других
     private static void fixTie(final List<RpssParticipantRate> rates, final int from, final int to) {
-        final List<RpssParticipantRate> best = new ArrayList<RpssParticipantRate>(to - from);
+        final List<RpssParticipantRate> best  = new ArrayList<RpssParticipantRate>(to - from);
         final List<RpssParticipantRate> worst = new ArrayList<RpssParticipantRate>(to - from);
-        final List<RpssParticipantRate> tie = rates.subList(from, to + 1);
+        final List<RpssParticipantRate> tie   = new ArrayList<RpssParticipantRate>(rates.subList(from, to + 1));
 
         // выберем лучших и худших по взаимным оценкам судей
         int tieSize;
@@ -221,5 +236,29 @@ public class RpssParticipantRate implements Comparable<RpssParticipantRate> {
             else if (tie.size() > 0) rates.set(index, tie.remove(0));
             else rates.set(index, worst.remove(0));
         }
+    }
+
+    @Override
+    public String toString() {
+        return toString(16);
+    }
+
+    public String toString(int nameLength) {
+        StringBuilder buf = new StringBuilder();
+        buf.append('|').append(getParticipant().getFullName());
+        while (buf.length() < nameLength + 1) buf.append(' ');
+        buf.append('|');
+        for (Score score : getScores()) {
+            if (score.getRate().intValue() < 10) buf.append(' ');
+            buf.append(score.getRate()).append('|');
+        }
+        for (RpssRateInfo rateInfo : getRates()) {
+            String info = rateInfo.toString();
+            while (info.length() < 7) info += " ";
+            buf.append(' ').append(info).append('|');
+        }
+        if (getPlace() < 10) buf.append(' ');
+        buf.append(' ').append(getPlace()).append(" |");
+        return buf.toString();
     }
 }

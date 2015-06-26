@@ -25,20 +25,40 @@ public class RpssRateInfo implements Comparable<RpssRateInfo> {
         return highPlace;
     }
 
+    public void setHighPlace(int highPlace) {
+        this.highPlace = highPlace;
+    }
+
     public int getLowPlace() {
         return lowPlace;
+    }
+
+    public void setLowPlace(int lowPlace) {
+        this.lowPlace = lowPlace;
     }
 
     public int getJudgeCount() {
         return judgeCount;
     }
 
+    public void setJudgeCount(int judgeCount) {
+        this.judgeCount = judgeCount;
+    }
+
     public int getHighScoreSum() {
         return highScoreSum;
     }
 
+    public void setHighScoreSum(int highScoreSum) {
+        this.highScoreSum = highScoreSum;
+    }
+
     public boolean isMajority() {
         return majority;
+    }
+
+    public void setMajority(boolean majority) {
+        this.majority = majority;
     }
 
     @Override
