@@ -1,9 +1,11 @@
 package com.improteam.dancecomp.model.dto;
 
+import com.improteam.dancecomp.scoring.Judge;
+
 /**
  * @author jury
  */
-public class JudgeDTO extends PersonDTO {
+public class JudgeDTO extends PersonDTO implements Judge {
 
     private boolean chief;
     private boolean trial;
@@ -12,8 +14,14 @@ public class JudgeDTO extends PersonDTO {
     private boolean judgeAll;
     private String nick;
 
+    @Override
     public boolean isChief() {
         return chief;
+    }
+
+    @Override
+    public String getCode() {
+        return getNick();
     }
 
     public void setChief(boolean chief) {
