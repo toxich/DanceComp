@@ -5,15 +5,9 @@ import com.improteam.dancecomp.model.dto.ParticipantDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.swing.event.TableModelEvent;
-import javax.swing.event.TableModelListener;
 import javax.swing.table.DefaultTableColumnModel;
 import javax.swing.table.TableColumn;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 /**
  * @author jury
@@ -27,6 +21,7 @@ public class ResultColumnModel extends DefaultTableColumnModel {
     private List<ParticipantDTO> participants;
 
     private List<TableColumn> columns;
+    private Map<Integer, Boolean> rowMark = new HashMap<>();
 
     public static final String[] PARTICIPANT_INFO = {
             "N",
@@ -40,6 +35,16 @@ public class ResultColumnModel extends DefaultTableColumnModel {
         initColumns();
     }
 
+    public Map<Integer, Boolean> getRowMark() {
+        return rowMark;
+    }
+
+    @Override
+    public TableColumn getColumn(int columnIndex) {
+        TableColumn resul = super.getColumn(columnIndex);
+        return resul;
+    }
+
     @Override
     public int getColumnCount() {
         return columns.size();
@@ -51,6 +56,11 @@ public class ResultColumnModel extends DefaultTableColumnModel {
         setJudgeColumns();
         setScoreColumns();
         addColumn(new PlaceColumn(), columns.size());
+        rowMark.clear();
+        for (int i = 0; i < columns.size(); i++) {
+            TableColumn column = columns.get(i);
+            if (column instanceof JudgeColumn) rowMark.put(i, i % 2 == 0);
+        }
     }
 
     private void addColumn(TableColumn column, int index) {
@@ -93,6 +103,7 @@ public class ResultColumnModel extends DefaultTableColumnModel {
             TableColumn column = columns.get(target);
             int real = getColumnIndex(column.getIdentifier());
             if (target != real) moveColumn(real, target);
+            column.setModelIndex(real);
         }
     }
 
@@ -111,6 +122,14 @@ public class ResultColumnModel extends DefaultTableColumnModel {
         @Override
         public Object getHeaderValue() {
             return PARTICIPANT_INFO[index];
+        }
+
+        public String getInfo(ParticipantDTO participant) {
+            return index == 0 ? String.valueOf(participant.getOrder()) : participant.getTitle();
+        }
+
+        public void setInfo(ParticipantDTO participant, String name) {
+            if (index == 1) participant.setTitle(name);
         }
     }
 

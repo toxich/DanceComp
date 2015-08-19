@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import javax.swing.table.*;
+import java.awt.*;
 import java.util.List;
 
 /**
@@ -55,6 +56,18 @@ public class JudgeTable extends AbstractTableModel {
     }
 
     @Override
+    public Object getValueAt(int rowIndex, int columnIndex) {
+        JudgeDTO judge = judges.get(rowIndex);
+        switch (columnIndex) {
+            case 0: return rowIndex + 1;
+            case 1: return judge.getCode();
+            case 2: return judge.isChief() ? "x" : "";
+            case 3: return judge.getFullName();
+        }
+        return null;
+    }
+
+    @Override
     public void setValueAt(Object valueObj, int row, int col) {
         String value = valueObj != null ? valueObj.toString() : "";
         JudgeDTO judge = judges.get(row);
@@ -72,26 +85,15 @@ public class JudgeTable extends AbstractTableModel {
         dataChange.fireJudgeDataChanged();
     }
 
-    @Override
-    public Object getValueAt(int rowIndex, int columnIndex) {
-        JudgeDTO judge = judges.get(rowIndex);
-        switch (columnIndex) {
-            case 0: return rowIndex + 1;
-            case 1: return judge.getCode();
-            case 2: return judge.isChief() ? "x" : "";
-            case 3: return judge.getFullName();
-        }
-        return null;
-    }
-
     public JTable getTable() {
         if (table == null) {
             table = new JTable(this);
             for (int cIndex = 0; cIndex < COLUMNS.length; cIndex++) {
                 TableColumn column = table.getColumnModel().getColumn(cIndex);
                 column.setHeaderValue(COLUMNS[cIndex]);
-                if (cIndex == 0) column.setMaxWidth(20);
-                else if (cIndex < COLUMNS.length -1) column.setMaxWidth(45);
+                if (cIndex == 0) column.setMaxWidth(30);
+                else if (cIndex == 1) column.setMaxWidth(45);
+                else if (cIndex == 2) column.setMaxWidth(45);
                 else column.setMinWidth(300);
             }
             table.getColumnModel().setColumnSelectionAllowed(false);
@@ -99,6 +101,7 @@ public class JudgeTable extends AbstractTableModel {
             table.setRowSelectionAllowed(true);
             table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
             table.setDefaultRenderer(Object.class, new ColoredTableRenderer());
+            table.setPreferredScrollableViewportSize(new Dimension(600, 250));
         }
         return table;
     }

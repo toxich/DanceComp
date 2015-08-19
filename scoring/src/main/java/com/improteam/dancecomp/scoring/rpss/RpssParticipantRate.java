@@ -287,7 +287,7 @@ public class RpssParticipantRate implements Comparable<RpssParticipantRate> {
 
     public String toString(int nameLength) {
         StringBuilder buf = new StringBuilder();
-        buf.append('|').append(getParticipant().getFullName());
+        buf.append('|').append(getParticipant().getTitle());
         while (buf.length() < nameLength + 1) buf.append(' ');
         buf.append('|');
         for (Score score : getScores()) {

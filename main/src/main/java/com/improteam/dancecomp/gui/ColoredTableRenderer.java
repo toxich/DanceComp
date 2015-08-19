@@ -21,13 +21,13 @@ public class ColoredTableRenderer extends DefaultTableCellRenderer {
 
     public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
         super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
-        int grayScale = row % 2 == 0 ? 0xff : 0xe0;
+        int grayScale = row % 2 == 0 ? 0xff : 0xf0;
         Boolean special = specialCols.get(column);
         setBackground(
                 new Color(
                         grayScale,
-                        grayScale - (Boolean.TRUE.equals(special) ? 10 : 0),
-                        grayScale - (Boolean.FALSE.equals(special) ? 10 : 0)
+                        grayScale - (Boolean.TRUE.equals(special) ? 30 : 0),
+                        grayScale - (special != null ? 30 : 0)
                 ));
         setForeground(new Color(0x00, 0x00, 0x00));
         return this;
@@ -35,5 +35,9 @@ public class ColoredTableRenderer extends DefaultTableCellRenderer {
 
     public Map<Integer, Boolean> getSpecialCols() {
         return specialCols;
+    }
+
+    public void setSpecialCols(Map<Integer, Boolean> specialCols) {
+        this.specialCols = specialCols;
     }
 }

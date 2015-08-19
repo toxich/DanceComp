@@ -1,6 +1,7 @@
 package com.improteam.dancecomp.gui;
 
 import com.improteam.dancecomp.model.dto.*;
+import com.improteam.dancecomp.scoring.Participant;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -9,6 +10,7 @@ import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableColumn;
+import java.awt.*;
 import java.util.List;
 
 /**
@@ -63,7 +65,49 @@ public class ResultTable extends AbstractTableModel {
 
     @Override
     public Object getValueAt(int rowIndex, int columnIndex) {
+        ParticipantDTO participant = participants.get(rowIndex);
+        TableColumn column = columns.getColumn(columnIndex);
+        if (column instanceof ResultColumnModel.ParticipantColumn) {
+            return ((ResultColumnModel.ParticipantColumn) column).getInfo(participant);
+        }
+
         return null;
+    }
+
+    @Override
+    public void setValueAt(Object valueObj, int row, int col) {
+        String value = valueObj != null ? valueObj.toString() : "";
+        ParticipantDTO participant = participants.get(row);
+        TableColumn column = columns.getColumn(col);
+        if (column instanceof ResultColumnModel.ParticipantColumn) {
+            ((ResultColumnModel.ParticipantColumn) column).setInfo(participant, value);
+        }
+
+    }
+
+    public void addParticipant() {
+        participants.add(new ParticipantDTO());
+        setOrder();
+    }
+
+    public void removeSelectedParticipant() {
+        participants.remove(table.getSelectedRow());
+        setOrder();
+    }
+
+    public void moveSelectedParticipant(boolean up) {
+        int curRow = table.getSelectedRow();
+        int newRow = up ? curRow -1 : curRow + 1;
+        if (participants.size() <= 1 || newRow < 0 || newRow >= participants.size()) return;
+        ParticipantDTO curPart = participants.get(curRow);
+        ParticipantDTO otherPart = participants.get(newRow);
+        participants.set(curRow, otherPart);
+        participants.set(newRow, curPart);
+        setOrder();
+    }
+
+    private void setOrder() {
+        for (int i = 0; i < participants.size(); i++) participants.get(i).setOrder(i + 1);
     }
 
     public JTable getTable() {
@@ -74,6 +118,8 @@ public class ResultTable extends AbstractTableModel {
             table.setRowSelectionAllowed(true);
             table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
             table.setDefaultRenderer(Object.class, cellRenderer = new ColoredTableRenderer());
+            cellRenderer.setSpecialCols(columns.getRowMark());
+            table.setPreferredScrollableViewportSize(new Dimension(1200, 500));
         }
         return table;
     }

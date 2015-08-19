@@ -8,7 +8,7 @@ import com.improteam.dancecomp.scoring.Participant;
 public class ParticipantDTO implements Participant {
 
     private String code;
-    private String fullName;
+    private String title;
     private int order;
 
     @Override
@@ -21,12 +21,12 @@ public class ParticipantDTO implements Participant {
     }
 
     @Override
-    public String getFullName() {
-        return fullName;
+    public String getTitle() {
+        return title;
     }
 
-    public void setFullName(String fullName) {
-        this.fullName = fullName;
+    public void setTitle(String title) {
+        this.title = title;
     }
 
     @Override

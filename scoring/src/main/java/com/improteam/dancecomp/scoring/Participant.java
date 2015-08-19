@@ -9,7 +9,7 @@ public interface Participant {
     public String getCode();
 
     // Composed name for both leader and follower
-    public String getFullName();
+    public String getTitle();
 
     // Order of the dance
     public int getOrder();

@@ -16,7 +16,6 @@ public class ContestDTO {
     private ContestLevel contestLevel;
 
     private List<JudgeDTO> judges;
-    private List<ScoringDTO> scoring;
     protected ContestResultDTO result;
 
     private List<EventParticipantDTO> leaders;
@@ -53,14 +52,6 @@ public class ContestDTO {
 
     public void setJudges(List<JudgeDTO> judges) {
         this.judges = judges;
-    }
-
-    public List<ScoringDTO> getScoring() {
-        return scoring != null ? scoring : new ArrayList<ScoringDTO>();
-    }
-
-    public void setScoring(List<ScoringDTO> scoring) {
-        this.scoring = scoring;
     }
 
     public ContestResultDTO getResult() {

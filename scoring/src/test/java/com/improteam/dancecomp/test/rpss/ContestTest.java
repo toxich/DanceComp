@@ -34,13 +34,13 @@ public class ContestTest {
         public int place;
         @Override
         public String toString() {
-            return place + " - " + rate.getParticipant().getFullName();
+            return place + " - " + rate.getParticipant().getTitle();
         }
     }
 
     public static Participant participant(String name) {
         for (Participant participant : participantMap.values()) {
-            if (participant.getFullName().equals(name)) return participant;
+            if (participant.getTitle().equals(name)) return participant;
         }
         return participant(participantMap.size() + 1, name);
     }
@@ -58,7 +58,7 @@ public class ContestTest {
                 return "P" + index;
             }
             @Override
-            public String getFullName() {
+            public String getTitle() {
                 return "Name " + index;
             }
             @Override

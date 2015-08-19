@@ -7,7 +7,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
-import javax.swing.event.TableModelEvent;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -29,10 +28,14 @@ public class ContestMainFrame implements DataChangeController {
     private ResultTable resultTable;
 
     private JFrame mainFrame;
-    private JButton addJudgeButton;
-    private JButton delJudgeButton;
-    private JButton upJudgeButton;
-    private JButton downJudgeButton;
+    private JButton jAddButton;
+    private JButton jDelButton;
+    private JButton jUpButton;
+    private JButton jDownButton;
+    private JButton pAddButton;
+    private JButton pDelButton;
+    private JButton pUpButton;
+    private JButton pDownButton;
     private JButton saveButton;
     private JButton loadButton;
     private JButton calcButton;
@@ -55,7 +58,7 @@ public class ContestMainFrame implements DataChangeController {
             logger.error("Application is started already");
         }
         mainFrame = new JFrame("RPSS contest calculation");
-        mainFrame .setMinimumSize(new Dimension(600, 360));
+        mainFrame .setMinimumSize(new Dimension(600, 500));
         mainFrame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         createControls();
         mainFrame.add(createMailPanel());
@@ -68,14 +71,23 @@ public class ContestMainFrame implements DataChangeController {
         judgeTable.addNewJudge();
         resultTable = new ResultTable(judges, participants, scores, this);
 
-        addJudgeButton = newButton("Add Judge");
-        addJudgeButton.addActionListener(new AddJudgeListener());
-        delJudgeButton = newButton("Delete Judge");
-        delJudgeButton.addActionListener(new DeleteJudgeListener());
-        upJudgeButton = newButton("Move Up");
-        upJudgeButton.addActionListener(new MoveUpJudgeListener());
-        downJudgeButton = newButton("Move Down");
-        downJudgeButton.addActionListener(new MoveDownJudgeListener());
+        jAddButton = newButton("Add Judge");
+        jAddButton.addActionListener(new AddJudgeListener());
+        jDelButton = newButton("Delete Judge");
+        jDelButton.addActionListener(new DeleteJudgeListener());
+        jUpButton = newButton("Move Up");
+        jUpButton.addActionListener(new MoveUpJudgeListener());
+        jDownButton = newButton("Move Down");
+        jDownButton.addActionListener(new MoveDownJudgeListener());
+
+        pAddButton = newButton("Add Participant");
+        pAddButton.addActionListener(new AddParticipantListener());
+        pDelButton = newButton("Delete Participant");
+        pDelButton.addActionListener(new DeleteParticipantListener());
+        pUpButton = newButton("Move Up");
+        pUpButton.addActionListener(new MoveUpParticipantListener());
+        pDownButton = newButton("Move Down");
+        pDownButton.addActionListener(new MoveDownParticipantListener());
 
         saveButton = newButton("Save");
         loadButton = newButton("Load");
@@ -115,6 +127,7 @@ public class ContestMainFrame implements DataChangeController {
         JPanel resultPanel = new JPanel();
         resultPanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
         resultPanel.setLayout(new BorderLayout());
+        resultPanel.add(createParticipantButtonsPanel(), BorderLayout.NORTH);
         resultPanel.add(new JScrollPane(resultTable.getTable()), BorderLayout.CENTER);
         return resultPanel;
     }
@@ -122,13 +135,26 @@ public class ContestMainFrame implements DataChangeController {
     private JPanel createJudgeButtonsPanel() {
         JPanel jButtonPanel = new JPanel();
         jButtonPanel.setLayout(new BoxLayout(jButtonPanel, BoxLayout.Y_AXIS));
-        jButtonPanel.add(addJudgeButton);
+        jButtonPanel.add(jAddButton);
         jButtonPanel.add(Box.createVerticalStrut(5));
-        jButtonPanel.add(delJudgeButton);
+        jButtonPanel.add(jDelButton);
         jButtonPanel.add(Box.createVerticalStrut(5));
-        jButtonPanel.add(upJudgeButton);
+        jButtonPanel.add(jUpButton);
         jButtonPanel.add(Box.createVerticalStrut(5));
-        jButtonPanel.add(downJudgeButton);
+        jButtonPanel.add(jDownButton);
+        return jButtonPanel;
+    }
+
+    private JPanel createParticipantButtonsPanel() {
+        JPanel jButtonPanel = new JPanel();
+        jButtonPanel.setLayout(new BoxLayout(jButtonPanel, BoxLayout.X_AXIS));
+        jButtonPanel.add(pAddButton);
+        jButtonPanel.add(Box.createHorizontalStrut(10));
+        jButtonPanel.add(pDelButton);
+        jButtonPanel.add(Box.createHorizontalStrut(10));
+        jButtonPanel.add(pUpButton);
+        jButtonPanel.add(Box.createHorizontalStrut(10));
+        jButtonPanel.add(pDownButton);
         return jButtonPanel;
     }
 
@@ -174,6 +200,38 @@ public class ContestMainFrame implements DataChangeController {
         public void actionPerformed(ActionEvent e) {
             judgeTable.moveSelectedJudge(false);
             fireJudgeDataChanged();
+        }
+    }
+
+    private class AddParticipantListener implements ActionListener {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            resultTable.addParticipant();
+            fireResultDataChanged();
+        }
+    }
+
+    private class DeleteParticipantListener implements ActionListener {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            resultTable.removeSelectedParticipant();
+            fireResultDataChanged();
+        }
+    }
+
+    private class MoveUpParticipantListener implements ActionListener {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            resultTable.moveSelectedParticipant(true);
+            fireResultDataChanged();
+        }
+    }
+
+    private class MoveDownParticipantListener implements ActionListener {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            resultTable.moveSelectedParticipant(false);
+            fireResultDataChanged();
         }
     }
 
