@@ -8,8 +8,8 @@ public class ParticipantsPairDTO {
     private Long id;
     private ContestDTO contest;
     private Integer contestNumber;
-    private ParticipantDTO leader;
-    private ParticipantDTO follower;
+    private EventParticipantDTO leader;
+    private EventParticipantDTO follower;
 
     public Long getId() {
         return id;
@@ -35,19 +35,19 @@ public class ParticipantsPairDTO {
         this.contestNumber = contestNumber;
     }
 
-    public ParticipantDTO getLeader() {
+    public EventParticipantDTO getLeader() {
         return leader;
     }
 
-    public void setLeader(ParticipantDTO leader) {
+    public void setLeader(EventParticipantDTO leader) {
         this.leader = leader;
     }
 
-    public ParticipantDTO getFollower() {
+    public EventParticipantDTO getFollower() {
         return follower;
     }
 
-    public void setFollower(ParticipantDTO follower) {
+    public void setFollower(EventParticipantDTO follower) {
         this.follower = follower;
     }
 }

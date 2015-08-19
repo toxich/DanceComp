@@ -18,16 +18,20 @@ public class JudgeTable extends AbstractTableModel {
     private static final Logger logger = LoggerFactory.getLogger(JudgeTable.class);
 
     public static final String[] COLUMNS = {
+            "N",
             "Code",
             "Chief",
             "Full Name"
     };
 
     private List<JudgeDTO> judges;
-    private JTable table;
 
-    public JudgeTable(List<JudgeDTO> judges) {
+    private JTable table;
+    private DataChangeController dataChange;
+
+    public JudgeTable(List<JudgeDTO> judges, DataChangeController dataChange) {
         this.judges = judges;
+        this.dataChange = dataChange;
     }
 
     @Override
@@ -47,7 +51,7 @@ public class JudgeTable extends AbstractTableModel {
 
     @Override
     public boolean isCellEditable(int row, int col) {
-        return true;
+        return col != 0;
     }
 
     @Override
@@ -55,26 +59,27 @@ public class JudgeTable extends AbstractTableModel {
         String value = valueObj != null ? valueObj.toString() : "";
         JudgeDTO judge = judges.get(row);
         switch (col) {
-            case 0:
+            case 1:
                 judge.setNick(value.length() > 0 ? value : newJudgeCode());
                 break;
-            case 1:
+            case 2:
                 setChief(judge, value.length() > 0);
                 break;
-            case 2:
+            case 3:
                 judge.setFullName(value);
                 break;
         }
-        fireJudgeDataChanged();
+        dataChange.fireJudgeDataChanged();
     }
 
     @Override
     public Object getValueAt(int rowIndex, int columnIndex) {
         JudgeDTO judge = judges.get(rowIndex);
         switch (columnIndex) {
-            case 0: return judge.getCode();
-            case 1: return judge.isChief() ? "x" : "";
-            case 2: return judge.getFullName();
+            case 0: return rowIndex + 1;
+            case 1: return judge.getCode();
+            case 2: return judge.isChief() ? "x" : "";
+            case 3: return judge.getFullName();
         }
         return null;
     }
@@ -85,13 +90,15 @@ public class JudgeTable extends AbstractTableModel {
             for (int cIndex = 0; cIndex < COLUMNS.length; cIndex++) {
                 TableColumn column = table.getColumnModel().getColumn(cIndex);
                 column.setHeaderValue(COLUMNS[cIndex]);
-                if (cIndex < COLUMNS.length -1) column.setMaxWidth(50);
+                if (cIndex == 0) column.setMaxWidth(20);
+                else if (cIndex < COLUMNS.length -1) column.setMaxWidth(45);
                 else column.setMinWidth(300);
             }
             table.getColumnModel().setColumnSelectionAllowed(false);
             table.setRowHeight(30);
             table.setRowSelectionAllowed(true);
             table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+            table.setDefaultRenderer(Object.class, new ColoredTableRenderer());
         }
         return table;
     }
@@ -157,14 +164,5 @@ public class JudgeTable extends AbstractTableModel {
             else hasChief = cur.isChief();
         }
         if (judges.size() > 0) judges.get(0).setChief(true);
-    }
-
-    public void fireJudgeDataChanged() {
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                fireTableDataChanged();
-            }
-        });
     }
 }

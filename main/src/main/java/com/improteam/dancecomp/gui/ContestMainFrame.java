@@ -1,10 +1,13 @@
 package com.improteam.dancecomp.gui;
 
 import com.improteam.dancecomp.model.dto.JudgeDTO;
+import com.improteam.dancecomp.model.dto.ParticipantDTO;
+import com.improteam.dancecomp.model.dto.ScoreDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
+import javax.swing.event.TableModelEvent;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -13,14 +16,17 @@ import java.util.List;
 /**
  * @author jury
  */
-public class ContestMainFrame {
+public class ContestMainFrame implements DataChangeController {
 
     @SuppressWarnings("unused")
     private static final Logger logger = LoggerFactory.getLogger(ContestMainFrame.class);
 
     private List<JudgeDTO> judges;
+    private List<ParticipantDTO> participants;
+    private List<ScoreDTO> scores;
+
     private JudgeTable judgeTable;
-    private JudgeTable resultTable;
+    private ResultTable resultTable;
 
     private JFrame mainFrame;
     private JButton addJudgeButton;
@@ -34,6 +40,14 @@ public class ContestMainFrame {
 
     public void setJudges(List<JudgeDTO> judges) {
         this.judges = judges;
+    }
+
+    public void setParticipants(List<ParticipantDTO> participants) {
+        this.participants = participants;
+    }
+
+    public void setScores(List<ScoreDTO> scores) {
+        this.scores = scores;
     }
 
     public void createFrame() {
@@ -50,9 +64,9 @@ public class ContestMainFrame {
     }
 
     private void createControls() {
-        judgeTable = new JudgeTable(judges);
+        judgeTable = new JudgeTable(judges, this);
         judgeTable.addNewJudge();
-        resultTable = new JudgeTable(judges);
+        resultTable = new ResultTable(judges, participants, scores, this);
 
         addJudgeButton = newButton("Add Judge");
         addJudgeButton.addActionListener(new AddJudgeListener());
@@ -135,7 +149,7 @@ public class ContestMainFrame {
         @Override
         public void actionPerformed(ActionEvent e) {
             judgeTable.addNewJudge();
-            judgeTable.fireJudgeDataChanged();
+            fireJudgeDataChanged();
         }
     }
 
@@ -143,7 +157,7 @@ public class ContestMainFrame {
         @Override
         public void actionPerformed(ActionEvent e) {
             judgeTable.removeSelectedJudge();
-            judgeTable.fireJudgeDataChanged();
+            fireJudgeDataChanged();
         }
     }
 
@@ -151,7 +165,7 @@ public class ContestMainFrame {
         @Override
         public void actionPerformed(ActionEvent e) {
             judgeTable.moveSelectedJudge(true);
-            judgeTable.fireJudgeDataChanged();
+            fireJudgeDataChanged();
         }
     }
 
@@ -159,7 +173,35 @@ public class ContestMainFrame {
         @Override
         public void actionPerformed(ActionEvent e) {
             judgeTable.moveSelectedJudge(false);
-            judgeTable.fireJudgeDataChanged();
+            fireJudgeDataChanged();
         }
+    }
+
+    public void fireJudgeDataChanged() {
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                judgeTable.fireTableDataChanged();
+                fireResultTableChanged();
+            }
+        });
+    }
+
+    public void fireResultDataChanged() {
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                resultTable.fireTableDataChanged();
+            }
+        });
+    }
+
+    public void fireResultTableChanged() {
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                resultTable.fireTableStructureChanged();
+            }
+        });
     }
 }

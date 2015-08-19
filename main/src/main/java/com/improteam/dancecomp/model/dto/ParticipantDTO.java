@@ -1,37 +1,40 @@
 package com.improteam.dancecomp.model.dto;
 
-import com.improteam.dancecomp.model.ParticipantType;
+import com.improteam.dancecomp.scoring.Participant;
 
 /**
  * @author jury
  */
-public class ParticipantDTO extends PersonDTO {
+public class ParticipantDTO implements Participant {
 
-    private ParticipantType participantType;
-    private Integer contestNumber;
-    private Integer wsdcNumber;
+    private String code;
+    private String fullName;
+    private int order;
 
-    public ParticipantType getParticipantType() {
-        return participantType;
+    @Override
+    public String getCode() {
+        return code;
     }
 
-    public void setParticipantType(ParticipantType participantType) {
-        this.participantType = participantType;
+    public void setCode(String code) {
+        this.code = code;
     }
 
-    public Integer getContestNumber() {
-        return contestNumber;
+    @Override
+    public String getFullName() {
+        return fullName;
     }
 
-    public void setContestNumber(Integer contestNumber) {
-        this.contestNumber = contestNumber;
+    public void setFullName(String fullName) {
+        this.fullName = fullName;
     }
 
-    public Integer getWsdcNumber() {
-        return wsdcNumber;
+    @Override
+    public int getOrder() {
+        return order;
     }
 
-    public void setWsdcNumber(Integer wsdcNumber) {
-        this.wsdcNumber = wsdcNumber;
+    public void setOrder(int order) {
+        this.order = order;
     }
 }

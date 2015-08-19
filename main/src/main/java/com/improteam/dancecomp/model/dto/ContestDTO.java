@@ -19,8 +19,8 @@ public class ContestDTO {
     private List<ScoringDTO> scoring;
     protected ContestResultDTO result;
 
-    private List<ParticipantDTO> leaders;
-    private List<ParticipantDTO> followers;
+    private List<EventParticipantDTO> leaders;
+    private List<EventParticipantDTO> followers;
     private List<ParticipantsPairDTO> pairs;
 
     public Long getId() {
@@ -71,19 +71,19 @@ public class ContestDTO {
         this.result = result;
     }
 
-    public List<ParticipantDTO> getLeaders() {
-        return leaders != null ? leaders : new ArrayList<ParticipantDTO>();
+    public List<EventParticipantDTO> getLeaders() {
+        return leaders != null ? leaders : new ArrayList<EventParticipantDTO>();
     }
 
-    public void setLeaders(List<ParticipantDTO> leaders) {
+    public void setLeaders(List<EventParticipantDTO> leaders) {
         this.leaders = leaders;
     }
 
-    public List<ParticipantDTO> getFollowers() {
-        return followers != null ? followers : new ArrayList<ParticipantDTO>();
+    public List<EventParticipantDTO> getFollowers() {
+        return followers != null ? followers : new ArrayList<EventParticipantDTO>();
     }
 
-    public void setFollowers(List<ParticipantDTO> followers) {
+    public void setFollowers(List<EventParticipantDTO> followers) {
         this.followers = followers;
     }
 
