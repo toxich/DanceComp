@@ -12,5 +12,5 @@ public interface Participant {
     public String getTitle();
 
     // Order of the dance
-    public int getOrder();
+    public Integer getOrder();
 }

@@ -62,7 +62,7 @@ public class ContestTest {
                 return "Name " + index;
             }
             @Override
-            public int getOrder() {
+            public Integer getOrder() {
                 return index;
             }
         };

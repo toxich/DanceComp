@@ -1,7 +1,7 @@
 package com.improteam.dancecomp.gui;
 
+import com.improteam.dancecomp.model.ContestModel;
 import com.improteam.dancecomp.model.dto.*;
-import com.improteam.dancecomp.scoring.Judge;
 import com.improteam.dancecomp.scoring.Place;
 import com.improteam.dancecomp.scoring.PlaceDetail;
 import org.slf4j.Logger;
@@ -112,6 +112,7 @@ public class ResultTable extends AbstractTableModel {
         else if (column instanceof ResultColumnModel.JudgeColumn) {
             JudgeDTO judge = ((ResultColumnModel.JudgeColumn) column).getJudge();
             setScore(judge, participant, value);
+            contestModel.getPlaces().clear();
             dataChange.fireResultDataChanged();
         }
     }
@@ -149,6 +150,7 @@ public class ResultTable extends AbstractTableModel {
 
     public void moveSelectedParticipant(boolean up) {
         int curRow = table.getSelectedRow();
+        if (curRow < 0) return;
         int newRow = up ? curRow -1 : curRow + 1;
         if (participants.size() <= 1 || newRow < 0 || newRow >= participants.size()) return;
         ParticipantDTO curPart = participants.get(curRow);

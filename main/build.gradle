@@ -1,4 +1,5 @@
 dependencies {
     compile project(':scoring')
+    compile ('commons-io:commons-io:2.4')
 }
 

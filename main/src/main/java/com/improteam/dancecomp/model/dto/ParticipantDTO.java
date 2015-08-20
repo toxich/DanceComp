@@ -9,7 +9,7 @@ public class ParticipantDTO implements Participant {
 
     private String code;
     private String title;
-    private int order;
+    private Integer order;
 
     @Override
     public String getCode() {
@@ -30,11 +30,11 @@ public class ParticipantDTO implements Participant {
     }
 
     @Override
-    public int getOrder() {
+    public Integer getOrder() {
         return order;
     }
 
-    public void setOrder(int order) {
+    public void setOrder(Integer order) {
         this.order = order;
     }
 }

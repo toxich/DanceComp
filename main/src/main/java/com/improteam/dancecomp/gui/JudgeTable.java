@@ -1,7 +1,7 @@
 package com.improteam.dancecomp.gui;
 
+import com.improteam.dancecomp.model.ContestModel;
 import com.improteam.dancecomp.model.dto.JudgeDTO;
-import com.improteam.dancecomp.scoring.Judge;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -73,7 +73,7 @@ public class JudgeTable extends AbstractTableModel {
         JudgeDTO judge = judges.get(row);
         switch (col) {
             case 1:
-                judge.setNick(value.length() > 0 ? value : newJudgeCode());
+                setCode(judge, value);
                 break;
             case 2:
                 setChief(judge, value.length() > 0);
@@ -126,6 +126,7 @@ public class JudgeTable extends AbstractTableModel {
 
     public void moveSelectedJudge(boolean up) {
         int curRow = table.getSelectedRow();
+        if (curRow < 0) return;
         int newRow = up ? curRow -1 : curRow + 1;
         if (judges.size() <= 1 || newRow < 0 || newRow >= judges.size()) return;
         JudgeDTO curJudge = judges.get(curRow);
@@ -147,6 +148,25 @@ public class JudgeTable extends AbstractTableModel {
             break;
         }
         return String.valueOf(code);
+    }
+
+    private void setCode(JudgeDTO judge, String value) {
+        String message = null;
+        if (value.length() == 0) {
+            message = "Judge code should not be empty";
+        } else {
+            for (JudgeDTO cur : judges) {
+                if (cur != judge && value.equals(cur.getNick())) {
+                    message = "Code '" + value + "' is in use already";
+                    break;
+                }
+            }
+        }
+        if (message != null) {
+            JOptionPane.showMessageDialog(null, message);
+        } else {
+            judge.setNick(value.length() > 0 ? value : newJudgeCode());
+        }
     }
 
     private void setChief(JudgeDTO judge, boolean chief) {

@@ -4,4 +4,5 @@ dependencies {
     compile ('org.apache.commons:commons-collections4:4.0')
     compile ('org.mockito:mockito-all:1.10.19')
     compile ('junit:junit:4.12')
+    compile ('com.google.code.gson:gson:2.3.1')
 }

@@ -1,17 +1,25 @@
 package com.improteam.dancecomp.gui;
 
-import com.improteam.dancecomp.model.dto.JudgeDTO;
+import com.improteam.dancecomp.model.ContestModel;
 import com.improteam.dancecomp.model.dto.ParticipantDTO;
 import com.improteam.dancecomp.model.dto.ScoreDTO;
 import com.improteam.dancecomp.scoring.Score;
 import com.improteam.dancecomp.scoring.rpss.RpssParticipantRate;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import sun.misc.FileURLMapper;
+import sun.nio.ch.IOUtil;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -41,6 +49,7 @@ public class ContestMainFrame implements DataChangeController {
     private JButton loadButton;
     private JButton calcButton;
     private JButton printButton;
+    private JFileChooser fileChooser;
 
     public ContestModel getContestModel() {
         return contestModel;
@@ -87,10 +96,14 @@ public class ContestMainFrame implements DataChangeController {
         pDownButton.addActionListener(new MoveDownParticipantListener());
 
         saveButton = newButton("Save");
+        saveButton.addActionListener(new SaveResultsListener());
         loadButton = newButton("Load");
+        loadButton.addActionListener(new LoadResultsListener());
         calcButton = newButton("Calculate");
         calcButton.addActionListener(new ResultCalculationListener());
         printButton = newButton("Print");
+
+        fileChooser = new JFileChooser();
     }
 
     private JButton newButton(String name) {
@@ -249,6 +262,36 @@ public class ContestMainFrame implements DataChangeController {
             contestModel.getPlaces().clear();
             contestModel.getPlaces().addAll(rates);
             fireResultDataChanged();
+        }
+    }
+
+    private class SaveResultsListener implements ActionListener {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            if (fileChooser.showSaveDialog(mainFrame) == JFileChooser.APPROVE_OPTION) {
+                try {
+                    FileUtils.write(fileChooser.getSelectedFile(), contestModel.serializeModel());
+                } catch (IOException ioError) {
+                    JOptionPane.showMessageDialog(null, "Can't write to file: " + ioError.getMessage());
+                }
+            }
+        }
+    }
+
+    private class LoadResultsListener implements ActionListener {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            if (fileChooser.showOpenDialog(mainFrame) == JFileChooser.APPROVE_OPTION) {
+                try {
+                    contestModel.deserializeModel(
+                            FileUtils.readFileToString(fileChooser.getSelectedFile())
+                    );
+                    fireJudgeDataChanged();
+                    fireResultTableChanged();
+                } catch (IOException ioError) {
+                    JOptionPane.showMessageDialog(null, "Can't read file: " + ioError.getMessage());
+                }
+            }
         }
     }
 

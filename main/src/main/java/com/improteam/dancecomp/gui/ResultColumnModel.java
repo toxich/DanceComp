@@ -1,5 +1,6 @@
 package com.improteam.dancecomp.gui;
 
+import com.improteam.dancecomp.model.ContestModel;
 import com.improteam.dancecomp.model.dto.JudgeDTO;
 import com.improteam.dancecomp.model.dto.ParticipantDTO;
 import org.slf4j.Logger;

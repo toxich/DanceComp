@@ -1,5 +1,6 @@
 package com.improteam.dancecomp.gui;
 
+import com.improteam.dancecomp.model.ContestModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
