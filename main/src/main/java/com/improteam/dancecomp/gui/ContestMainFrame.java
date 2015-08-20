@@ -3,6 +3,8 @@ package com.improteam.dancecomp.gui;
 import com.improteam.dancecomp.model.dto.JudgeDTO;
 import com.improteam.dancecomp.model.dto.ParticipantDTO;
 import com.improteam.dancecomp.model.dto.ScoreDTO;
+import com.improteam.dancecomp.scoring.Score;
+import com.improteam.dancecomp.scoring.rpss.RpssParticipantRate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -10,6 +12,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -20,9 +23,7 @@ public class ContestMainFrame implements DataChangeController {
     @SuppressWarnings("unused")
     private static final Logger logger = LoggerFactory.getLogger(ContestMainFrame.class);
 
-    private List<JudgeDTO> judges;
-    private List<ParticipantDTO> participants;
-    private List<ScoreDTO> scores;
+    private ContestModel contestModel = new ContestModel();
 
     private JudgeTable judgeTable;
     private ResultTable resultTable;
@@ -41,16 +42,12 @@ public class ContestMainFrame implements DataChangeController {
     private JButton calcButton;
     private JButton printButton;
 
-    public void setJudges(List<JudgeDTO> judges) {
-        this.judges = judges;
+    public ContestModel getContestModel() {
+        return contestModel;
     }
 
-    public void setParticipants(List<ParticipantDTO> participants) {
-        this.participants = participants;
-    }
-
-    public void setScores(List<ScoreDTO> scores) {
-        this.scores = scores;
+    public void setContestModel(ContestModel contestModel) {
+        this.contestModel = contestModel;
     }
 
     public void createFrame() {
@@ -67,9 +64,9 @@ public class ContestMainFrame implements DataChangeController {
     }
 
     private void createControls() {
-        judgeTable = new JudgeTable(judges, this);
+        judgeTable = new JudgeTable(contestModel, this);
         judgeTable.addNewJudge();
-        resultTable = new ResultTable(judges, participants, scores, this);
+        resultTable = new ResultTable(contestModel, this);
 
         jAddButton = newButton("Add Judge");
         jAddButton.addActionListener(new AddJudgeListener());
@@ -92,6 +89,7 @@ public class ContestMainFrame implements DataChangeController {
         saveButton = newButton("Save");
         loadButton = newButton("Load");
         calcButton = newButton("Calculate");
+        calcButton.addActionListener(new ResultCalculationListener());
         printButton = newButton("Print");
     }
 
@@ -231,6 +229,25 @@ public class ContestMainFrame implements DataChangeController {
         @Override
         public void actionPerformed(ActionEvent e) {
             resultTable.moveSelectedParticipant(false);
+            fireResultDataChanged();
+        }
+    }
+
+    private class ResultCalculationListener implements ActionListener {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            int partsCount = contestModel.getParticipants().size();
+            List<RpssParticipantRate> rates = new ArrayList<>(partsCount);
+            for (ParticipantDTO part : contestModel.getParticipants()) {
+                List<Score> partScores = new ArrayList<>(contestModel.getJudges().size());
+                for (ScoreDTO score : contestModel.getScores()) {
+                    if (score.getParticipant().equals(part)) partScores.add(score);
+                }
+                rates.add(new RpssParticipantRate(part, partScores, partsCount));
+            }
+            RpssParticipantRate.rank(rates);
+            contestModel.getPlaces().clear();
+            contestModel.getPlaces().addAll(rates);
             fireResultDataChanged();
         }
     }

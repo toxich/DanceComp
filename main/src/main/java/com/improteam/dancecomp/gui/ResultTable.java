@@ -1,7 +1,9 @@
 package com.improteam.dancecomp.gui;
 
 import com.improteam.dancecomp.model.dto.*;
-import com.improteam.dancecomp.scoring.Participant;
+import com.improteam.dancecomp.scoring.Judge;
+import com.improteam.dancecomp.scoring.Place;
+import com.improteam.dancecomp.scoring.PlaceDetail;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -21,7 +23,7 @@ public class ResultTable extends AbstractTableModel {
     @SuppressWarnings("unused")
     private static final Logger logger = LoggerFactory.getLogger(ResultTable.class);
 
-    private List<JudgeDTO> judges;
+    private ContestModel contestModel;
     private List<ParticipantDTO> participants;
     private List<ScoreDTO> scores;
 
@@ -30,15 +32,10 @@ public class ResultTable extends AbstractTableModel {
     private ColoredTableRenderer cellRenderer;
     private DataChangeController dataChange;
 
-    public ResultTable(
-            List<JudgeDTO> judges,
-            List<ParticipantDTO> participants,
-            List<ScoreDTO> scores,
-            DataChangeController dataChange
-    ) {
-        this.judges = judges;
-        this.participants = participants;
-        this.scores = scores;
+    public ResultTable(ContestModel contestModel, DataChangeController dataChange) {
+        this.contestModel = contestModel;
+        this.participants = contestModel.getParticipants();
+        this.scores = contestModel.getScores();
         this.dataChange = dataChange;
         addTableModelListener(new TableModelListener() {
             @Override
@@ -70,7 +67,36 @@ public class ResultTable extends AbstractTableModel {
         if (column instanceof ResultColumnModel.ParticipantColumn) {
             return ((ResultColumnModel.ParticipantColumn) column).getInfo(participant);
         }
+        else if (column instanceof ResultColumnModel.JudgeColumn) {
+            JudgeDTO judge = ((ResultColumnModel.JudgeColumn) column).getJudge();
+            Number score = getScore(judge, participant);
+            return score != null ? score : "";
+        }
+        else if (column instanceof ResultColumnModel.ScoreColumn) {
+            int lowPlace = ((ResultColumnModel.ScoreColumn) column).getLowPlace();
+            for (Place place : contestModel.getPlaces()) {
+                if (place.getParticipant().equals(participant)) {
+                    for (PlaceDetail detail : place.getDetails()) {
+                        if (detail.isRelated(lowPlace)) return detail.printDetail();
+                    }
+                    return place.getResultPlace();
+                }
+            }
+        }
+        else if (column instanceof ResultColumnModel.PlaceColumn) {
+            for (Place place : contestModel.getPlaces()) {
+                if (place.getParticipant().equals(participant)) return place.getResultPlace();
+            }
+        }
+        return "";
+    }
 
+    private Number getScore(JudgeDTO judge, ParticipantDTO participant) {
+        for (ScoreDTO score : scores) {
+            if (score.getJudge().equals(judge) && score.getParticipant().equals(participant)) {
+                return score.getRate();
+            }
+        }
         return null;
     }
 
@@ -81,8 +107,34 @@ public class ResultTable extends AbstractTableModel {
         TableColumn column = columns.getColumn(col);
         if (column instanceof ResultColumnModel.ParticipantColumn) {
             ((ResultColumnModel.ParticipantColumn) column).setInfo(participant, value);
+            dataChange.fireResultDataChanged();
         }
+        else if (column instanceof ResultColumnModel.JudgeColumn) {
+            JudgeDTO judge = ((ResultColumnModel.JudgeColumn) column).getJudge();
+            setScore(judge, participant, value);
+            dataChange.fireResultDataChanged();
+        }
+    }
 
+    private void setScore(JudgeDTO judge, ParticipantDTO participant, String value) {
+        ScoreDTO score = null;
+        for (ScoreDTO cur : scores) {
+            if (cur.getJudge().equals(judge) && cur.getParticipant().equals(participant)) {
+                score = cur;
+                break;
+            }
+        }
+        if (score == null) {
+            score = new ScoreDTO();
+            score.setParticipant(participant);
+            score.setJudge(judge);
+            scores.add(score);
+        }
+        Integer rate = null;
+        try {
+            rate = Integer.parseInt(value);
+        } catch (Exception e) {}
+        score.setRate(rate);
     }
 
     public void addParticipant() {
@@ -112,7 +164,7 @@ public class ResultTable extends AbstractTableModel {
 
     public JTable getTable() {
         if (table == null) {
-            table = new JTable(this, columns = new ResultColumnModel(judges, participants));
+            table = new JTable(this, columns = new ResultColumnModel(contestModel));
             table.getColumnModel().setColumnSelectionAllowed(false);
             table.setRowHeight(30);
             table.setRowSelectionAllowed(true);

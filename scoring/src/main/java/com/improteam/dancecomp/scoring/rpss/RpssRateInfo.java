@@ -1,10 +1,12 @@
 package com.improteam.dancecomp.scoring.rpss;
 
+import com.improteam.dancecomp.scoring.PlaceDetail;
+
 /**
  * Суммарная оценка по интервалу мест от судей по одному участнику
  * @author jury
  */
-public class RpssRateInfo implements Comparable<RpssRateInfo> {
+public class RpssRateInfo implements PlaceDetail, Comparable<RpssRateInfo> {
 
     // верхняя граница интервала (по факту - всегда 1)
     int highPlace = 1;
@@ -59,6 +61,33 @@ public class RpssRateInfo implements Comparable<RpssRateInfo> {
 
     public void setMajority(boolean majority) {
         this.majority = majority;
+    }
+
+    @Override
+    public String printDetail() {
+        return toString();
+    }
+
+    @Override
+    public boolean isRelated(Object type) {
+        return type != null && type.equals(lowPlace);
+    }
+
+    @Override
+    public boolean isEmpty() {
+        return !majority;
+    }
+
+    @Override
+    public boolean isTieResolution() {
+        //todo
+        return false;
+    }
+
+    @Override
+    public boolean isTieTrace() {
+        //todo
+        return false;
     }
 
     @Override

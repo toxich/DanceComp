@@ -28,21 +28,15 @@ public class ResultColumnModel extends DefaultTableColumnModel {
             "Participants"
     };
 
-    public ResultColumnModel(List<JudgeDTO> judges, List<ParticipantDTO> participants) {
-        this.judges = judges;
-        this.participants = participants;
+    public ResultColumnModel(ContestModel contestModel) {
+        this.judges = contestModel.getJudges();
+        this.participants = contestModel.getParticipants();
         columns = new ArrayList<>();
         initColumns();
     }
 
     public Map<Integer, Boolean> getRowMark() {
         return rowMark;
-    }
-
-    @Override
-    public TableColumn getColumn(int columnIndex) {
-        TableColumn resul = super.getColumn(columnIndex);
-        return resul;
     }
 
     @Override
@@ -160,6 +154,7 @@ public class ResultColumnModel extends DefaultTableColumnModel {
             super();
             setIdentifier(index + 1);
             setHeaderValue("1-" + (index + 1));
+            setMaxWidth(50);
         }
 
         public int getLowPlace() {

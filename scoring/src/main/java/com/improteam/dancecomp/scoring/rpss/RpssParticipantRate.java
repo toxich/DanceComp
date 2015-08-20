@@ -1,8 +1,6 @@
 package com.improteam.dancecomp.scoring.rpss;
 
-import com.improteam.dancecomp.scoring.Judge;
-import com.improteam.dancecomp.scoring.Participant;
-import com.improteam.dancecomp.scoring.Score;
+import com.improteam.dancecomp.scoring.*;
 import org.apache.commons.collections4.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,7 +11,7 @@ import java.util.*;
  * Полные оценки и результат участника
  * @author jury
  */
-public class RpssParticipantRate implements Comparable<RpssParticipantRate> {
+public class RpssParticipantRate implements Place, Comparable<RpssParticipantRate> {
 
     @SuppressWarnings("UnusedDeclaration")
     private static final Logger logger = LoggerFactory.getLogger(RpssParticipantRate.class);
@@ -45,6 +43,16 @@ public class RpssParticipantRate implements Comparable<RpssParticipantRate> {
         this.scores = scores;
         this.participantCount = participantCount;
         checkScoring();
+    }
+
+    @Override
+    public List<PlaceDetail> getDetails() {
+        return new ArrayList<PlaceDetail>(getRates());
+    }
+
+    @Override
+    public Integer getResultPlace() {
+        return getPlace() > 0 ? getPlace() : null;
     }
 
     public List<RpssRateInfo> getRates() {

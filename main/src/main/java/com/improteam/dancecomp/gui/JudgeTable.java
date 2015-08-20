@@ -30,8 +30,8 @@ public class JudgeTable extends AbstractTableModel {
     private JTable table;
     private DataChangeController dataChange;
 
-    public JudgeTable(List<JudgeDTO> judges, DataChangeController dataChange) {
-        this.judges = judges;
+    public JudgeTable(ContestModel contestModel, DataChangeController dataChange) {
+        this.judges = contestModel.getJudges();
         this.dataChange = dataChange;
     }
 
